@@ -5,6 +5,7 @@ import os
 import random
 pygame.font.init()
 
+GEN = 0
 
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
@@ -162,7 +163,7 @@ class Base:
         
 
 
-def draw_window(win,birds, pipes, base, score):
+def draw_window(win,birds, pipes, base, score, gen):
     win.blit(BG_IMG,(0,0))
     base.draw(win)
     for bird in birds:
@@ -174,11 +175,15 @@ def draw_window(win,birds, pipes, base, score):
     text = STAT_FONT.render("Score: "+str(score),1,(255,255,255))
     win.blit(text, ( WIN_WIDTH - 10-text.get_width(),10 ) )
 
+    scoretext = STAT_FONT.render("Gen: "+str(gen),1,(255,255,255))
+    win.blit(scoretext, (10,10) )
+
     pygame.display.update()
     
 
 def main(genomes,config):
-    
+    global GEN
+    GEN += 1
     nets = []
     ge = []
     birds = []
@@ -235,7 +240,7 @@ def main(genomes,config):
         for pipe in pipes:
             for x,bird in enumerate(birds):
                 if pipe.collide(bird):
-                    ge[x].fitness -= 1
+                    #ge[x].fitness -= 1
                     birds.pop(x)
                     nets.pop(x)
                     ge.pop(x)
@@ -262,14 +267,17 @@ def main(genomes,config):
                 nets.pop(x)
                 ge.pop(x)
        
+       if score > 50:
+           break
 
         
         base.move()
-        draw_window(win, birds , pipes , base,score)
+        draw_window(win, birds , pipes , base, score, GEN)
         
 
 
 def run(config_path):
+    import 
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,neat.DefaultSpeciesSet,neat.DefaultStagnation,config_path)
 
     p = neat.Population(config)
